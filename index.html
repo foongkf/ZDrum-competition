@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zdrum Competition Ticket Purchase</title>
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f8f9fa;
+        }
+        .ticket-form {
+            background-color: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 25px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #34495e;
+        }
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-size: 16px;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            padding: 14px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+            margin-top: 15px;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        .price-display {
+            font-size: 18px;
+            font-weight: bold;
+            margin: 20px 0;
+            padding: 15px;
+            background-color: #f1f8fe;
+            border-radius: 6px;
+            text-align: center;
+        }
+        .payment-note {
+            font-size: 14px;
+            color: #e74c3c;
+            text-align: center;
+            margin: 15px 0;
+            font-style: italic;
+        }
+        .ticket-container {
+            display: none;
+            background-color: white;
+            border-radius: 10px;
+            padding: 25px;
+            margin-top: 30px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            border: 1px solid #e0e0e0;
+        }
+        #ticket-to-save {
+            position: relative;
+        }
+        .ticket-header {
+            text-align: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px dashed #3498db;
+        }
+        .ticket-title {
+            font-size: 22px;
+            color: #2c3e50;
+            margin: 0;
+        }
+        .ticket-details {
+            margin: 20px 0;
+        }
+        .detail-row {
+            display: flex;
+            margin-bottom: 15px;
+        }
+        .detail-label {
+            font-weight: bold;
+            color: #7f8c8d;
+            width: 120px;
+        }
+        .detail-value {
+            flex: 1;
+            color: #2c3e50;
+        }
+        .ticket-footer {
+            text-align: center;
+            font-size: 14px;
+            color: #95a5a6;
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px dashed #bdc3c7;
+        }
+        .copy-btn {
+            background-color: #9b59b6;
+            margin-top: 10px;
+        }
+        .copy-btn:hover {
+            background-color: #8e44ad;
+        }
+        .save-btn {
+            background-color: #2ecc71;
+            margin-top: 10px;
+        }
+        .save-btn:hover {
+            background-color: #27ae60;
+        }
+        .status-message {
+            text-align: center;
+            margin-top: 10px;
+            font-size: 14px;
+            color: #27ae60;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="ticket-form">
+        <h1>Zdrum Competition Ticket Purchase</h1>
+        
+        <form id="ticketForm">
+            <div class="form-group">
+                <label for="name">Full Name 姓名:</label>
+                <input type="text" id="name" name="name" required>
+            </div>
+
+            <div class="form-group">
+                <label for="phone">Phone Number 电话号码:</label>
+                <input type="tel" id="phone" name="phone" required>
+            </div>
+
+            <div class="form-group">
+                <label for="quantity">Number of Tickets 票数:</label>
+                <input type="number" id="quantity" name="quantity" min="1" max="99" value="1" required>
+            </div>
+
+            <div class="price-display" id="priceDisplay">
+                Total Price 总价: RM 10.00
+            </div>
+
+            <div class="payment-note">
+                Please screenshot payment receipt and send to us<br>
+                请截图付款收据并发送给我们
+            </div>
+
+            <button type="submit">Generate Ticket 生成门票</button>
+        </form>
+
+        <div class="ticket-container" id="ticketContainer">
+            <div id="ticket-to-save">
+                <div class="ticket-header">
+                    <h2 class="ticket-title">Zdrum Competition Ticket 比赛门票</h2>
+                </div>
+                
+                <div class="ticket-details">
+                    <div class="detail-row">
+                        <span class="detail-label">Name 姓名:</span>
+                        <span class="detail-value" id="ticketName"></span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Phone 电话:</span>
+                        <span class="detail-value" id="ticketPhone"></span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Tickets 票数:</span>
+                        <span class="detail-value" id="ticketQuantity"></span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Total Price 总价:</span>
+                        <span class="detail-value" id="ticketPrice"></span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Ticket ID 票号:</span>
+                        <span class="detail-value" id="ticketId"></span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Purchase Date/Time 购票日期时间:</span>
+                        <span class="detail-value" id="purchaseDateTime"></span>
+                    </div>
+                </div>
+                
+                <div class="ticket-footer">
+                    <p>Present this ticket at the entrance.<br>
+                    请在入口出示此票。</p>
+                </div>
+            </div>
+            
+            <button class="copy-btn" id="copyBtn">Copy Details 复制详情</button>
+            <button class="save-btn" id="saveBtn">Save as Image 保存为图片</button>
+            <div class="status-message" id="statusMessage"></div>
+        </div>
+    </div>
+
+    <script>
+        // Update price display when quantity changes
+        document.getElementById('quantity').addEventListener('input', function() {
+            const quantity = parseInt(this.value) || 0;
+            const totalPrice = quantity * 10;
+            document.getElementById('priceDisplay').textContent = `Total Price 总价: RM ${totalPrice.toFixed(2)}`;
+        });
+
+        // Handle form submission
+        document.getElementById('ticketForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Get form values
+            const name = document.getElementById('name').value;
+            const phone = document.getElementById('phone').value;
+            const quantity = document.getElementById('quantity').value;
+            const totalPrice = quantity * 10;
+            
+            // Generate current date and time
+            const now = new Date();
+            const purchaseDateTime = now.toLocaleString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
+            
+            // Generate 5-digit ticket ID with ZD- prefix
+            const ticketId = 'ZD-' + Math.floor(10000 + Math.random() * 90000); // Generates ZD- followed by 5 digits
+            
+            // Display ticket information
+            document.getElementById('ticketName').textContent = name;
+            document.getElementById('ticketPhone').textContent = phone;
+            document.getElementById('ticketQuantity').textContent = quantity;
+            document.getElementById('ticketPrice').textContent = `RM ${totalPrice.toFixed(2)}`;
+            document.getElementById('ticketId').textContent = ticketId;
+            document.getElementById('purchaseDateTime').textContent = purchaseDateTime;
+            
+            // Show the ticket
+            document.getElementById('ticketContainer').style.display = 'block';
+            
+            // Scroll to ticket
+            document.getElementById('ticketContainer').scrollIntoView({ behavior: 'smooth' });
+        });
+
+        // Copy specific details to clipboard in one line
+        document.getElementById('copyBtn').addEventListener('click', function() {
+            const detailsToCopy = [
+                `Ticket ID: ${document.getElementById('ticketId').textContent}`,
+                `Name: ${document.getElementById('ticketName').textContent}`,
+                `Phone: ${document.getElementById('ticketPhone').textContent}`,
+                `Tickets: ${document.getElementById('ticketQuantity').textContent}`,
+                `Total: ${document.getElementById('ticketPrice').textContent}`
+            ].join(', ');
+            
+            navigator.clipboard.writeText(detailsToCopy).then(function() {
+                showStatusMessage("Details copied to clipboard! 详情已复制到剪贴板！");
+            }).catch(function(err) {
+                console.error('Failed to copy details: ', err);
+                showStatusMessage("Failed to copy details 复制详情失败", true);
+            });
+        });
+
+        // Save ticket as image
+        document.getElementById('saveBtn').addEventListener('click', function() {
+            const ticketElement = document.getElementById('ticket-to-save');
+            
+            showStatusMessage("Generating image... 正在生成图片");
+            
+            html2canvas(ticketElement, {
+                backgroundColor: '#ffffff',
+                scale: 2 // Higher quality
+            }).then(canvas => {
+                // Create download link
+                const link = document.createElement('a');
+                link.download = `Zdrum-Ticket-${document.getElementById('ticketId').textContent}.jpg`;
+                link.href = canvas.toDataURL('image/jpeg', 0.9);
+                link.click();
+                showStatusMessage("Ticket saved as image! 门票已保存为图片！");
+            }).catch(err => {
+                console.error('Error saving ticket:', err);
+                showStatusMessage("Error saving ticket 保存门票失败", true);
+            });
+        });
+
+        // Show status message
+        function showStatusMessage(message, isError = false) {
+            const statusMessage = document.getElementById('statusMessage');
+            statusMessage.textContent = message;
+            statusMessage.style.color = isError ? '#e74c3c' : '#27ae60';
+            statusMessage.style.display = 'block';
+            setTimeout(function() {
+                statusMessage.style.display = 'none';
+            }, 3000);
+        }
+
+        // Enable right-click save on ticket
+        document.getElementById('ticket-to-save').addEventListener('contextmenu', function(e) {
+            e.preventDefault();
+            html2canvas(this, {
+                backgroundColor: '#ffffff',
+                scale: 2
+            }).then(canvas => {
+                const image = canvas.toDataURL('image/jpeg', 0.9);
+                const link = document.createElement('a');
+                link.href = image;
+                link.download = `Zdrum-Ticket-${document.getElementById('ticketId').textContent}.jpg`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                showStatusMessage("Ticket saved as image! 门票已保存为图片！");
+            });
+        });
+    </script>
+</body>
+</html>
