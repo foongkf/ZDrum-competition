@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Zdrum Competition Ticket Purchase</title>
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
     <style>
         body {
             font-family: 'Arial', sans-serif;
@@ -140,6 +141,23 @@
             color: #27ae60;
             display: none;
         }
+        .qr-code-container {
+            text-align: center;
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px dashed #bdc3c7;
+            border-radius: 8px;
+        }
+        .qr-code {
+            display: inline-block;
+            padding: 10px;
+            background: white;
+        }
+        .qr-code-label {
+            margin-top: 10px;
+            font-size: 14px;
+            color: #7f8c8d;
+        }
     </style>
 </head>
 <body>
@@ -207,6 +225,11 @@
                     </div>
                 </div>
                 
+                <div class="qr-code-container">
+                    <div id="qrCode" class="qr-code"></div>
+                    <div class="qr-code-label">Scan to verify ticket 扫描验证门票</div>
+                </div>
+                
                 <div class="ticket-footer">
                     <p>Present this ticket at the entrance.<br>
                     请在入口出示此票。</p>
@@ -259,12 +282,44 @@
             document.getElementById('ticketId').textContent = ticketId;
             document.getElementById('purchaseDateTime').textContent = purchaseDateTime;
             
+            // Generate QR code with ticket details
+            generateQRCode(ticketId, name, phone, quantity, totalPrice, purchaseDateTime);
+            
             // Show the ticket
             document.getElementById('ticketContainer').style.display = 'block';
             
             // Scroll to ticket
             document.getElementById('ticketContainer').scrollIntoView({ behavior: 'smooth' });
         });
+
+        // Generate QR code function
+        function generateQRCode(ticketId, name, phone, quantity, totalPrice, purchaseDateTime) {
+            // Create the data string for QR code
+            const qrData = `Zdrum Competition Ticket\n\n` +
+                           `Ticket ID: ${ticketId}\n` +
+                           `Name: ${name}\n` +
+                           `Phone: ${phone}\n` +
+                           `Tickets: ${quantity}\n` +
+                           `Total: RM ${totalPrice.toFixed(2)}\n` +
+                           `Purchase Date: ${purchaseDateTime}`;
+            
+            // Generate QR code
+            const qr = qrcode(0, 'L');
+            qr.addData(qrData);
+            qr.make();
+            
+            // Create QR code image element
+            const qrCodeElement = document.getElementById('qrCode');
+            qrCodeElement.innerHTML = qr.createImgTag(4); // Size 4 (adjust as needed)
+            
+            // Style the QR code image
+            const qrImg = qrCodeElement.querySelector('img');
+            if (qrImg) {
+                qrImg.style.width = '150px';
+                qrImg.style.height = '150px';
+                qrImg.style.border = '5px solid white';
+            }
+        }
 
         // Copy specific details to clipboard in one line
         document.getElementById('copyBtn').addEventListener('click', function() {
